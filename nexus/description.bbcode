@@ -1,0 +1,76 @@
+[size=5][b]Playable Ellie (WORKING)[/b][/size]
+
+[b]Play Joel's chapters of The Last of Us Part I as Ellie — and it actually works.[/b]
+
+Other playable-Ellie mods swap the model and stop there: Ellie can barely move, can't aim properly, can't craft, and holds Joel's guns at odd angles. This mod loads everything she needs. She walks, runs, climbs, aims, shoots, reloads, interacts and crafts in every chapter, with her own animations.
+
+[size=4][b]Features[/b][/size]
+[list]
+[*][b]Ellie in Joel's chapters[/b], wearing the outfit that matches the chapter (or one you choose).
+[*][b]She really moves[/b]: her own walking, aiming, cover, throwing, melee, ladders and more. The mod has the game stream her animation packages in, the same way it loads a chapter.
+[*][b]Crafting works in every chapter[/b], not just Winter, and she knows every recipe.
+[*][b]Joel's 9mm sits straight in her hands[/b], with proper recoil.
+[*][b]Joel follows her as the AI companion[/b] instead of a second Ellie (on by default): the same companion, with her AI and scripted moments, in Joel's body and the chapter's outfit.
+[*][b]F10 switches[/b] between Ellie and the story character at any time, restarting from your last checkpoint.
+[*]Small [b]on-screen messages[/b] show what's happening: "Loading Ellie's animations..." with a progress bar, then "Swapped to Ellie".
+[*]Settings in [i]Documents\Playable Ellie (WORKING)\PlayableEllie.ini[/i], kept when you update.
+[/list]
+
+[size=4][b]How to use[/b][/size]
+[list]
+[*]Ellie is on by default. Load a save in one of Joel's chapters and you play as Ellie.
+[*]If her animations aren't loaded yet, the mod loads them and restarts from your last checkpoint once (progress since that checkpoint is lost, as with Pause > Restart Checkpoint).
+[*]Press [b]F10[/b] in game to switch between Ellie and Joel.
+[/list]
+
+[size=4][b]Installation[/b][/size]
+[b]Fluffy Mod Manager (recommended)[/b]
+[list=1]
+[*]Put [i]PlayableEllieWorking-v1.0.0.zip[/i] in [i]Fluffy Mod Manager\Games\TLOU\Mods\[/i].
+[*]Open Fluffy and tick [b]Playable Ellie (WORKING)[/b]. Untick it to turn the mod off.
+[/list]
+
+[b]Manual[/b]
+[list=1]
+[*]Copy [i]hid.dll[/i] from the zip into the folder that contains [i]tlou-i.exe[/i]
+(e.g. [i]C:\Program Files (x86)\Steam\steamapps\common\The Last of Us Part I\[/i]).
+[*]To uninstall, delete [i]hid.dll[/i] and [i]PlayableEllie.log[/i] from that folder.
+[/list]
+Install while the game is closed, and use one method only. No other loader is needed. [i]modinfo.ini[/i] and [i]screenshot.png[/i] in the zip are only for Fluffy.
+
+[size=4][b]Settings[/b][/size]
+[list]
+[*][b]PlayAsEllie[/b] (1) — play as Ellie; F10 changes it
+[*][b]ToggleKey[/b] (121 = F10) — any Windows key code, 0 = no key
+[*][b]JoelCompanion[/b] (1) — the companion Ellie becomes Joel
+[*][b]Outfit[/b] (0) — 0 = match the chapter, 1-11 = a fixed outfit
+[*][b]GiveRecipes[/b] (1) — teach Ellie every crafting recipe
+[*][b]Notifications[/b] (1) — on-screen messages; [b]Sounds[/b] (0) — beeps
+[*][b]Logging[/b] (1) — [i]PlayableEllie.log[/i] next to the game
+[/list]
+
+[size=4][b]Compatibility[/b][/size]
+[list]
+[*][b]Tested:[/b] Steam, game version 1.1.4.0 (build 18995818), [i]tlou-i.exe[/i]. [i]tlou-i-l.exe[/i] (low latency) is supported too.
+[*]Everything is found by signature in the game's code. If a game update changes something, that part switches itself off and the log says why — the game keeps running.
+[*]Loads as [i]hid.dll[/i], so it works next to my other mods: [url=https://www.nexusmods.com/thelastofuspart1/mods/254]The Last of Us Infinite Ammo[/url] and [url=https://www.nexusmods.com/thelastofuspart1/mods/255]TLOU Outfit Changer[/url].
+[*][b]w1z's menu[/b] ([url=https://www.nexusmods.com/thelastofuspart1/mods/256]mod 256[/url]) already includes this playable Ellie on its Character page. If the menu is installed, this mod steps aside and does nothing — use one or the other.
+[*]Single-player only. The mod never writes save or profile files itself; the recipes it teaches Ellie are saved by the game at its next checkpoint.
+[/list]
+
+[size=4][b]Known issues[/b][/size]
+[list]
+[*]Bow: Ellie's arm clips through it when it's put away.
+[*]Shotgun and hunting rifle twitch in from the right when aiming.
+[*]Companion Joel speaks Ellie's lines in her voice (voices belong to the companion).
+[/list]
+
+[size=4][b]Source code[/b][/size]
+Open source (MIT): [url=https://github.com/w1zr/Playable-Ellie]github.com/w1zr/Playable-Ellie[/url]
+
+[size=4][b]Credits[/b][/size]
+[list]
+[*][url=https://github.com/TsudaKageyu/minhook]MinHook[/url] by Tsuda Kageyu (BSD 2-clause)
+[*][url=https://github.com/ocornut/imgui]Dear ImGui[/url] by Omar Cornut (MIT)
+[*]Naughty Dog for The Last of Us Part I
+[/list]
