@@ -6,12 +6,14 @@
 #include "log.h"
 #include "overlay.h"
 #include "settings.h"
+#include "version.h"
 
 #include "../third_party/minhook/include/MinHook.h"
 
 #include <windows.h>
 #include <intrin.h>
 #include <algorithm>
+#include <array>
 #include <atomic>
 #include <cstdio>
 #include <cstring>
@@ -485,26 +487,86 @@ constexpr uint64_t kRevolverSecondKey = 0x8D99EFE7C9519C6E; // entry 1 (+0x40)
 constexpr uint64_t kRevolverOverlayCount = 55;
 constexpr uint64_t kHoldKeys[2] = {0x3A44AABBD653F271, 0x8D99EFE7C9519C6E}; // revolver entries 0 and 1
 constexpr uint64_t kRevolverHold = 0x19E1B5667FD820F7, kEllieHold = 0x5A3555FEAA9DAA3B;
+constexpr uint64_t kSceneHold = 0x999E2C69E65BC987; // the 9mm table's scripted-scene hold (the tilt)
 uint64_t g_9mmOverlayCount = 0; // address of the 9mm's {table, count} count field, 0 = not found
 uint64_t g_9mmTable = 0, g_revolverTable = 0;
-std::vector<uint64_t> g_9mmMix; // the copy (55 entries of 8 values), empty = not made
-bool g_9mmOverlayOff = false;
 std::atomic<bool> g_gunSearching{false};
 int g_gunSearches = 0;
 
-// Game thread only. The 9mm's table for Ellie: the copy, else the revolver's own.
-uint64_t EllieGunTable() {
-    if (g_9mmMix.empty() && g_revolverTable) {
-        std::vector<uint64_t> t(kRevolverOverlayCount * 8);
-        if (ReadMem(g_revolverTable, t.data(), t.size() * 8) && t[0] == kHoldKeys[0] && t[1] == kRevolverHold &&
-            t[8] == kHoldKeys[1] && t[9] == kRevolverHold) {
-            t[1] = t[9] = kEllieHold;
-            g_9mmMix = std::move(t);
-        } else {
-            logx::Write("ellie: revolver table changed; 9mm uses it as it is");
-        }
+// Which table the 9mm uses while Ellie plays (Fix9mm=). 1.0 used mode 1: the
+// gun points straight, but when it runs dry the game's automatic weapon switch
+// leaves her arms out with no animation until she aims (owner, 2026-10-30;
+// gone with mode 0, which tilts the gun up again). The other modes mix the
+// 9mm's own entries (which switch fine) with the revolver's (which hold it
+// straight) to find one that does both. None did: modes 2-6 all tilted the gun
+// up (owner, 2026-10-30), so releases offer only 0 and 1 and keep 1.
+constexpr int kGunModes = 7;
+const char* const kGunModeNames[kGunModes] = {
+    "the game's own (tilts up)",
+    "1.0: revolver copy + Ellie's hold",
+    "revolver copy + the 9mm's own extras (no scene grip)",
+    "9mm's own + the revolver's aim values (no scene grip)",
+    "revolver copy + all the 9mm's own extras",
+    "9mm's own + the revolver's aim values",
+    "9mm's own with Ellie's hold",
+};
+int g_gunMode = 1;          // wanted while Ellie plays
+int g_gunApplied = 0;       // in memory now (0 = the game's own reference)
+uint64_t g_gunAppliedRef[2] = {}; // {table, count} written, to check nothing else changed it
+std::vector<uint64_t> g_gunTables[kGunModes]; // built once; their memory never moves afterwards
+
+using Entry = std::array<uint64_t, 8>; // {key, overlay set, ...}: one 0x40-byte table entry
+
+// Game thread only. Builds every mode's table from the two game tables.
+bool BuildGunTables() {
+    if (!g_gunTables[1].empty()) return true;
+    std::vector<Entry> nine(k9mmOverlayCount), rev(kRevolverOverlayCount);
+    if (!ReadMem(g_9mmTable, nine.data(), nine.size() * 0x40) || !ReadMem(g_revolverTable, rev.data(), rev.size() * 0x40) ||
+        rev[0][0] != kHoldKeys[0] || rev[0][1] != kRevolverHold || rev[1][0] != kHoldKeys[1] || rev[1][1] != kRevolverHold ||
+        nine[0][0] != k9mmOverlayFirst[0] || nine[0][1] != kSceneHold) {
+        logx::Write("ellie: 9mm or revolver table changed; 9mm left as it is");
+        return false;
     }
-    return g_9mmMix.empty() ? g_revolverTable : reinterpret_cast<uint64_t>(g_9mmMix.data());
+    std::vector<Entry> revMix = rev; // mode 1: 1.0's table
+    revMix[0][1] = revMix[1][1] = kEllieHold;
+    auto find = [](const std::vector<Entry>& t, uint64_t key) -> const Entry* {
+        for (const auto& e : t)
+            if (e[0] == key) return &e;
+        return nullptr;
+    };
+    // The 9mm's own entries the revolver table has no key for.
+    std::vector<Entry> extras, extrasNoGrip;
+    for (const auto& e : nine)
+        if (!find(rev, e[0])) {
+            extras.push_back(e);
+            if (e[0] != kGripAim) extrasNoGrip.push_back(e);
+        }
+    // The 9mm's own table, values for keys the revolver has taken from 1.0's
+    // table (hold -> Ellie's hold), the scene hold anywhere else -> Ellie's.
+    std::vector<Entry> nineRev, nineRevNoGrip, nineHold = nine;
+    for (const auto& e : nine) {
+        Entry x = e;
+        if (const Entry* r = find(revMix, e[0])) x[1] = (*r)[1];
+        if (x[1] == kSceneHold) x[1] = kEllieHold;
+        nineRev.push_back(x);
+        if (e[0] != kGripAim) nineRevNoGrip.push_back(x);
+    }
+    for (auto& e : nineHold)
+        if (e[1] == kSceneHold) e[1] = kEllieHold;
+    auto flat = [](std::vector<Entry> a, const std::vector<Entry>& b = {}) {
+        a.insert(a.end(), b.begin(), b.end());
+        std::vector<uint64_t> out;
+        for (const auto& e : a) out.insert(out.end(), e.begin(), e.end());
+        return out;
+    };
+    g_gunTables[1] = flat(revMix);
+    g_gunTables[2] = flat(revMix, extrasNoGrip);
+    g_gunTables[3] = flat(nineRevNoGrip);
+    g_gunTables[4] = flat(revMix, extras);
+    g_gunTables[5] = flat(nineRev);
+    g_gunTables[6] = flat(nineHold);
+    logx::Write("ellie: 9mm tables built (%zu of the 9mm's own entries are not in the revolver's)", extras.size());
+    return true;
 }
 
 void FindGunOverlay() {
@@ -539,7 +601,10 @@ void FindGunOverlay() {
     logx::Write("ellie: 9mm Ellie overlay %s, revolver overlay %s (%lu ms)", found ? "found" : "NOT found",
                 revolver ? "found" : "NOT found", GetTickCount() - start);
     gameloop::RunOnGameThread([found, table9, revolver] {
-        if (!g_9mmOverlayOff && !g_9mmOverlayCount) g_9mmOverlayCount = found, g_9mmTable = table9, g_revolverTable = revolver;
+        if (!g_gunApplied && !g_9mmOverlayCount && found && revolver) {
+            g_9mmOverlayCount = found, g_9mmTable = table9, g_revolverTable = revolver;
+            g_gunAppliedRef[0] = table9, g_gunAppliedRef[1] = k9mmOverlayCount;
+        }
         g_gunSearching = false;
     });
 }
@@ -547,35 +612,38 @@ void FindGunOverlay() {
 // Searches for the 9mm's overlay in the background (its data may only be in
 // memory once a game is loaded, so this is retried on Ellie spawns).
 void StartGunSearch() {
-    if (g_9mmOverlayCount || g_9mmOverlayOff || g_gunSearches >= 5 || g_gunSearching.exchange(true)) return;
+    if ((!g_gunMode && !PE_TEST_9MM) || g_9mmOverlayCount || g_gunSearches >= 5 || g_gunSearching.exchange(true)) return;
     ++g_gunSearches;
     std::thread(&FindGunOverlay).detach();
 }
 
-// Game thread only.
+// Game thread only. Points the 9mm at the table for the current mode (Ellie
+// playing) or back at its own table.
 void SyncGunOverlay(bool ellie) {
-    if (ellie == g_9mmOverlayOff || !g_9mmOverlayCount) return;
+    const int want = ellie ? g_gunMode : 0;
+    if (want == g_gunApplied || !g_9mmOverlayCount) return;
+    if (want && !BuildGunTables()) {
+        g_9mmOverlayCount = 0;
+        g_gunSearches = 5;
+        return;
+    }
     // The {table, count} reference: count at g_9mmOverlayCount, pointer just before.
     auto* ref = reinterpret_cast<volatile uint64_t*>(g_9mmOverlayCount - 8);
     uint64_t cur[2] = {};
-    const uint64_t mine[2] = {g_9mmTable, k9mmOverlayCount};
-    const uint64_t ellieRef[2] = {g_revolverTable ? EllieGunTable() : g_9mmTable, g_revolverTable ? kRevolverOverlayCount : 0};
-    const uint64_t* expect = ellie ? mine : ellieRef;
-    if (!ReadMem(g_9mmOverlayCount - 8, cur, sizeof cur) || cur[0] != expect[0] || cur[1] != expect[1]) {
+    if (!ReadMem(g_9mmOverlayCount - 8, cur, sizeof cur) || cur[0] != g_gunAppliedRef[0] || cur[1] != g_gunAppliedRef[1]) {
         logx::Write("ellie: 9mm Ellie overlay changed; left alone");
         g_9mmOverlayCount = 0;
         g_gunSearches = 5; // the data moved: stop looking
         return;
     }
-    const uint64_t* want = ellie ? ellieRef : mine;
+    const uint64_t table = want ? reinterpret_cast<uint64_t>(g_gunTables[want].data()) : g_9mmTable;
+    const uint64_t count = want ? g_gunTables[want].size() / 8 : k9mmOverlayCount;
     ref[1] = 0; // count first: never a count past the end of either table
-    ref[0] = want[0];
-    ref[1] = want[1];
-    g_9mmOverlayOff = ellie;
-    logx::Write("ellie: 9mm uses %s", !ellie ? "its normal animations"
-                                     : !g_9mmMix.empty() ? "the revolver's animations with Ellie's pistol hold (straight, with recoil)"
-                                     : g_revolverTable ? "the revolver's animations (level, with recoil)"
-                                                       : "no overlay (level, no recoil)");
+    ref[0] = table;
+    ref[1] = count;
+    g_gunAppliedRef[0] = table, g_gunAppliedRef[1] = count;
+    g_gunApplied = want;
+    logx::Write("ellie: 9mm uses table %d: %s (%llu entries)", want, kGunModeNames[want], static_cast<unsigned long long>(count));
 }
 
 // ------------------------------------------------------------- crafting
@@ -795,6 +863,19 @@ void Tick() {
         if (now && !down) OnToggleKey();
         down = now;
     }
+    if (PE_TEST_9MM) { // test builds: F11 cycles the 9mm tables while playing
+        static bool down = false;
+        const bool now = (GetAsyncKeyState(VK_F11) & 0x8000) != 0 && GameInForeground();
+        if (now && !down) {
+            g_gunMode = (g_gunMode + 1) % kGunModes;
+            char msg[128];
+            std::snprintf(msg, sizeof msg, "9mm table %d: %s", g_gunMode, kGunModeNames[g_gunMode]);
+            Say(msg);
+            if (!g_9mmOverlayCount) StartGunSearch();
+            SyncGunOverlay(g_on || g_swappedTo == 1);
+        }
+        down = now;
+    }
     CheckSwappedSpawn();
 
     // No player for ~2 s (main menu, chapter load): the next chapter may be
@@ -911,12 +992,15 @@ void Init(const uint8_t* base, const resolve::Addresses& a) {
     if (g_toggleKey < 0 || g_toggleKey > 0xFE) g_toggleKey = 0;
     g_outfit = settings::GetInt("Outfit", 0);
     g_giveRecipes = settings::GetBool("GiveRecipes", true);
+    g_gunMode = settings::GetInt("Fix9mm", 1);
+    if (g_gunMode < 0 || g_gunMode >= (PE_TEST_9MM ? kGunModes : 2)) g_gunMode = 1;
     g_notify = settings::GetBool("Notifications", true);
     g_sounds = settings::GetBool("Sounds", false);
     const bool wantBuddy = settings::GetBool("JoelCompanion", true);
-    logx::Write("settings: PlayAsEllie=%d ToggleKey=%d JoelCompanion=%d Outfit=%d GiveRecipes=%d Notifications=%d Sounds=%d",
-                g_on ? 1 : 0, g_toggleKey, wantBuddy ? 1 : 0, g_outfit, g_giveRecipes ? 1 : 0, g_notify ? 1 : 0,
-                g_sounds ? 1 : 0);
+    logx::Write("settings: PlayAsEllie=%d ToggleKey=%d JoelCompanion=%d Outfit=%d GiveRecipes=%d Fix9mm=%d Notifications=%d "
+                "Sounds=%d",
+                g_on ? 1 : 0, g_toggleKey, wantBuddy ? 1 : 0, g_outfit, g_giveRecipes ? 1 : 0, g_gunMode,
+                g_notify ? 1 : 0, g_sounds ? 1 : 0);
 
     BuildMaps();
     if (!LoadPackageLists()) {

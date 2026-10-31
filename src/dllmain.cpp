@@ -157,7 +157,7 @@ void Init() {
     logx::Open(log, settings::GetBool("Logging", true));
     logx::Write(MOD_NAME " " MOD_VERSION " loaded (hid.dll)");
     if (proxy::MissingExports()) logx::Write("warning: %d hid exports not found in System32\\hid.dll", proxy::MissingExports());
-    logx::Write("settings file: %ls%s", settings::Path().c_str(), settings::CreatedThisRun() ? " (created)" : settings::UpgradedThisRun() ? " (updated to the 0.2.0 keys)" : "");
+    logx::Write("settings file: %ls%s", settings::Path().c_str(), settings::CreatedThisRun() ? " (created)" : settings::UpgradedThisRun() ? " (updated with the new keys)" : "");
 
     // Loader lock is held here: do the real work on a thread.
     HANDLE t = CreateThread(nullptr, 0, Startup, nullptr, 0, nullptr);

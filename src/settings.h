@@ -11,7 +11,7 @@ namespace settings {
 void Init(const wchar_t* iniPath);
 const std::wstring& Path();
 bool CreatedThisRun();
-// True when Init rewrote a 0.1.0 file with the new keys (values kept).
+// True when Init rewrote an older file with the new keys (values kept).
 bool UpgradedThisRun();
 
 bool GetBool(const char* key, bool def);

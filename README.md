@@ -38,12 +38,14 @@ Ellie is on by default. Load a save of one of Joel's chapters and you play as El
 | `JoelCompanion` | 1 | The story companion Ellie becomes Joel while you play as Ellie |
 | `Outfit` | 0 | 0 = match the chapter, 1-11 = costume 01, 02, 03, 04, 05, 06, 07, 08, 11, 13, 15 |
 | `GiveRecipes` | 1 | Teach Ellie every crafting recipe after she spawns |
+| `Fix9mm` | 1 | Joel's 9mm sits straight in her hands (0 = the game's own: tilts up, but no freeze on the automatic weapon switch) |
 | `Notifications` | 1 | On-screen messages (loading, swapped, errors) |
 | `Sounds` | 0 | Also beep for the toggle key and the swap |
 | `Logging` | 1 | Write `PlayableEllie.log` next to the game exe |
 
 ## Known issues
 
+- When the 9mm runs dry and the game switches weapons by itself, Ellie's arms stay out with no animation until you aim. Aim once to fix it. `Fix9mm=0` avoids it, but then the 9mm tilts up in her hands (the game's own table for her is made for a scripted scene).
 - Bow: Ellie's arm clips through it when it is put away.
 - Shotgun and hunting rifle twitch in from the right when aiming.
 - Companion Joel speaks Ellie's lines in her voice (voices belong to the companion).

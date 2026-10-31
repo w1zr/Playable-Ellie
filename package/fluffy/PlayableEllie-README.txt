@@ -32,7 +32,7 @@ Use
 Settings
   Documents\Playable Ellie (WORKING)\PlayableEllie.ini (made on first launch,
   kept when you update). PlayAsEllie, ToggleKey (121 = F10), JoelCompanion,
-  Outfit (0 = match the chapter, 1-11 = a fixed outfit), GiveRecipes,
+  Outfit (0 = match the chapter, 1-11 = a fixed outfit), GiveRecipes, Fix9mm,
   Notifications (on-screen messages), Sounds (beeps, off), Logging.
 
 Log
@@ -40,6 +40,9 @@ Log
   did. Please include it with bug reports.
 
 Known issues
+  - When the 9mm runs dry and the game switches weapons by itself, Ellie's
+    arms stay out with no animation until you aim. Aim once to fix it.
+    Fix9mm=0 in the ini avoids it, but then the 9mm tilts up in her hands.
   - Bow: Ellie's arm clips through it when it is put away.
   - Shotgun and hunting rifle twitch in from the right when aiming.
   - Companion Joel speaks Ellie's lines in her voice.

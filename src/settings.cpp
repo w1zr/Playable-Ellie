@@ -39,6 +39,10 @@ const char kTemplate[] =
     "; 1 = teach Ellie every crafting recipe after she spawns, so the crafting\r\n"
     "; menu has something to show (the game saves it at the next checkpoint).\r\n"
     "GiveRecipes=%d\r\n"
+    "; 1 = Joel's 9mm sits straight in Ellie's hands. Known issue: when it runs\r\n"
+    "; dry and the game switches weapons by itself, her arms stay out until you\r\n"
+    "; aim. 0 = no freeze, but the 9mm tilts up in her hands.\r\n"
+    "Fix9mm=%d\r\n"
     "; 1 = small on-screen messages: loading Ellie's animations, swapped, errors.\r\n"
     "Notifications=%d\r\n"
     "; 1 = also beep when the toggle key is pressed and when the swap is done.\r\n"
@@ -50,12 +54,13 @@ struct Key {
     const wchar_t* name;
     int def;
 };
-const Key kKeys[] = {{L"PlayAsEllie", 1},   {L"ToggleKey", 121},    {L"JoelCompanion", 1}, {L"Outfit", 0},
-                     {L"GiveRecipes", 1},   {L"Notifications", 1}, {L"Sounds", 0},        {L"Logging", 1}};
+const Key kKeys[] = {{L"PlayAsEllie", 1}, {L"ToggleKey", 121},    {L"JoelCompanion", 1}, {L"Outfit", 0}, {L"GiveRecipes", 1},
+                     {L"Fix9mm", 1},      {L"Notifications", 1}, {L"Sounds", 0},        {L"Logging", 1}};
+constexpr int kKeyCount = static_cast<int>(sizeof(kKeys) / sizeof(kKeys[0]));
 
-bool Write(const wchar_t* path, const int (&v)[8], DWORD how) {
-    char text[sizeof(kTemplate) + 128];
-    const int n = std::snprintf(text, sizeof text, kTemplate, v[0], v[1], v[2], v[3], v[4], v[5], v[6], v[7]);
+bool Write(const wchar_t* path, const int (&v)[kKeyCount], DWORD how) {
+    char text[sizeof(kTemplate) + 160];
+    const int n = std::snprintf(text, sizeof text, kTemplate, v[0], v[1], v[2], v[3], v[4], v[5], v[6], v[7], v[8]);
     if (n <= 0 || n >= static_cast<int>(sizeof text)) return false;
     HANDLE f = CreateFileW(path, GENERIC_WRITE, 0, nullptr, how, FILE_ATTRIBUTE_NORMAL, nullptr);
     if (f == INVALID_HANDLE_VALUE) return false;
@@ -69,19 +74,22 @@ bool Write(const wchar_t* path, const int (&v)[8], DWORD how) {
 
 void Init(const wchar_t* iniPath) {
     g_ini = iniPath;
-    int v[8];
+    int v[kKeyCount];
     if (GetFileAttributesW(iniPath) == INVALID_FILE_ATTRIBUTES) {
         std::wstring dir(iniPath);
         dir = dir.substr(0, dir.find_last_of(L'\\'));
         CreateDirectoryW(dir.c_str(), nullptr);
-        for (int i = 0; i < 8; ++i) v[i] = kKeys[i].def;
+        for (int i = 0; i < kKeyCount; ++i) v[i] = kKeys[i].def;
         g_created = Write(iniPath, v, CREATE_NEW);
         return;
     }
-    // A file from 0.1.0 (it had Beep=, no Notifications=): rewritten with the
-    // new keys and comments, keeping every value the player had.
-    if (GetPrivateProfileIntW(kSection, L"Notifications", -1, iniPath) != -1) return;
-    for (int i = 0; i < 8; ++i) v[i] = static_cast<int>(GetPrivateProfileIntW(kSection, kKeys[i].name, kKeys[i].def, iniPath));
+    // A file from an older version (a key missing): rewritten with every key
+    // and comment, keeping every value the player had.
+    bool complete = true;
+    for (const Key& k : kKeys) complete = complete && GetPrivateProfileIntW(kSection, k.name, -12345, iniPath) != static_cast<UINT>(-12345);
+    if (complete) return;
+    for (int i = 0; i < kKeyCount; ++i)
+        v[i] = static_cast<int>(GetPrivateProfileIntW(kSection, kKeys[i].name, kKeys[i].def, iniPath));
     g_upgraded = Write(iniPath, v, CREATE_ALWAYS);
 }
 
