@@ -12,7 +12,7 @@ A mod for **The Last of Us Part I** (PC, Steam 1.1.4.0) that lets you play Joel'
 
 It is the playable Ellie from [w1z's menu](https://github.com/w1zr/w1z-menu) 1.2.0, packaged on its own for players who only want Ellie. If w1z's menu is installed, this mod steps aside (the menu's Character page already does all of this).
 
-**Version 1.0.** Download: [GitHub releases](https://github.com/w1zr/Playable-Ellie/releases/latest). Tested in game; see [TEST_REPORT.md](TEST_REPORT.md).
+**Version 1.0.** Download: [Nexus Mods](https://www.nexusmods.com/thelastofuspart1/mods/259) or [GitHub releases](https://github.com/w1zr/Playable-Ellie/releases/latest). Tested in game; see [TEST_REPORT.md](TEST_REPORT.md).
 
 ## Install
 

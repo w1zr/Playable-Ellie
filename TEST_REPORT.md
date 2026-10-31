@@ -2,11 +2,21 @@
 
 Game: Steam The Last of Us Part I 1.1.4.0 (build 18995818), `tlou-i.exe` timestamp `0x685BEBE1`, `tlou-i-l.exe` `0x685BF099`.
 
-## 1.0 (release, 2026-10-30)
+## 1.0 (release, 2026-10-30): GitHub v1.0 and Nexus mod 259
 
-Build: `build\hid.dll` SHA-256 `603b8bb9d710d5a679a480140068fe500aefeb3cb11e2fc6b89f4b45e456317d`; zip `release\PlayableEllieWorking-v1.0.0.zip` (`modinfo.ini`, `screenshot.png`, `hid.dll`, empty `PlayableEllie.log`, readme).
-Same code as 0.2.0; only the version string changed. Offline: build with no warnings, `scan_test` all passed on both exes, `proxy_test` all passed.
-In game: 1.0 itself not run; the code is 0.2.0's, which the owner ran and approved ("That's good. I like it."). The Fluffy install of the 1.0 zip still has to be ticked and checked by the owner.
+Build: `build\hid.dll` SHA-256 `ec6b64930d86b6d6c66d46294160ff40f2503f26efda76c90b8509096d115384`; zip `release\PlayableEllieWorking-v1.0.0.zip` (`modinfo.ini`, `screenshot.png`, `hid.dll`, empty `PlayableEllie.log`, readme). It replaced the first GitHub upload (SHA-256 of that `hid.dll`: `603b8bb9...`, kept in `release\superseded\`).
+0.2.0's code plus the `Fix9mm` setting (default 1, same 9mm table as 0.2.0).
+
+### Automatic weapon switch freeze (owner, 2026-10-30): known issue
+| Test | Result |
+|---|---|
+| 1.0 / 1.0.1-test with `Fix9mm=1`: 9mm runs dry, the game switches weapons by itself | **Fail**: Ellie's arms stay out with no animation until she aims |
+| 1.0.1-test with `Fix9mm=0` (the game's own 9mm table) | No freeze, but the 9mm tilts up again |
+| 1.0.2-test, tables 2-6 (mixes of the 9mm's and the revolver's entries, F11 to cycle) | All tilted the 9mm up (owner) |
+| Decision | Keep table 1 (straight), list the freeze as a known issue (aim once to recover); `Fix9mm=0` documented as the alternative |
+
+Offline: build with no warnings, `scan_test` all passed on both exes, `proxy_test` all passed.
+In game: the 1.0 build itself has not been run. Its behaviour with `Fix9mm=1` is 0.2.0's, which the owner ran and approved, and the owner's ini is set to 1. The 1.0 zip still has to be ticked in Fluffy in place of the 1.0.2 test build.
 
 ## 0.2.0 (test build, 2026-10-30)
 

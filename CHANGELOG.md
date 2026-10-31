@@ -9,6 +9,7 @@ The 0.2.0 build released as 1.0, with its own logo and a `Fix9mm` setting.
 - `Fix9mm` (1 = straight 9mm, the default; 0 = the game's own table). Known issue with 1: when the 9mm runs dry and the game switches weapons by itself, Ellie's arms stay out until she aims. Six mixed tables were tried in game (test builds 1.0.1 / 1.0.2, F11 to cycle); all tilted the gun up, so 1 stays.
 - New artwork: logo, Fluffy Mod Manager preview (`screenshot=` in `modinfo.ini`) and Nexus header.
 - GitHub: https://github.com/w1zr/Playable-Ellie
+- Nexus Mods: https://www.nexusmods.com/thelastofuspart1/mods/259
 
 ## 0.2.0 (2026-10-30, test build, not released)
 
