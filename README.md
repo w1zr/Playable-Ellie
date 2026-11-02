@@ -17,6 +17,14 @@ It is the playable Ellie from [w1z's menu](https://github.com/w1zr/w1z-menu) 1.2
 
 **Version 1.1.** Download: [Nexus Mods](https://www.nexusmods.com/thelastofuspart1/mods/259) or [GitHub releases](https://github.com/w1zr/Playable-Ellie/releases/latest). Tested in game by me and by a player with ReShade and OptiScaler on a laptop; see [TEST_REPORT.md](TEST_REPORT.md) and [CHANGELOG.md](CHANGELOG.md).
 
+## Screenshots
+
+| | |
+|---|---|
+| ![Ellie with Joel's shotgun](nexus/images/07-ellie-shotgun-alley.png) | ![Ellie with the revolver, the bow upright on her back](nexus/images/08-ellie-revolver-bow-on-back.png) |
+| ![Ellie from behind, bow and arrows on her back](nexus/images/09-ellie-backpack-bow.png) | ![Ellie in an Extras skin with the 9mm](nexus/images/10-ellie-jacket-skin-9mm.png) |
+| ![Ellie aiming the hunting rifle next to companion Joel](nexus/images/11-ellie-rifle-with-joel.png) | |
+
 ## Install
 
 - **Fluffy Mod Manager:** put `PlayableEllieWorking-v1.1.0.zip` in Fluffy's `Games\TLOU\Mods` folder and tick it. Untick it to turn the mod off.
