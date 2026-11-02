@@ -7,6 +7,7 @@
 #include "proxy_hid.h"
 #include "resolve.h"
 #include "settings.h"
+#include "skins.h"
 #include "version.h"
 
 #include "../third_party/minhook/include/MinHook.h"
@@ -70,6 +71,18 @@ bool GameFolderModLoaded(const wchar_t* dllName, const char* tag) {
     return false;
 }
 
+// Another tool that draws over the game through DirectX 12 (ReShade, OptiScaler,
+// or any dxgi.dll / d3d12.dll wrapper in the game folder), or nullptr. With
+// either of them the message overlay crashed the game on spawn or on F10 (a
+// player on Nexus tested each one alone, 2026-11-01; Notifications=0 fixed it).
+const char* OtherDx12Tool() {
+    if (Exists(L"ReShade.ini") || GetModuleHandleW(L"ReShade64.dll")) return "ReShade";
+    if (Exists(L"OptiScaler.ini") || GetModuleHandleW(L"OptiScaler.dll")) return "OptiScaler";
+    if (Exists(L"dxgi.dll")) return "a dxgi.dll in the game folder";
+    if (Exists(L"d3d12.dll")) return "a d3d12.dll in the game folder";
+    return nullptr;
+}
+
 bool ImageInfo(const uint8_t*& base, size_t& textEnd, size_t& imageSize, uint32_t& stamp) {
     base = reinterpret_cast<const uint8_t*>(GetModuleHandleW(nullptr));
     auto* dos = reinterpret_cast<const IMAGE_DOS_HEADER*>(base);
@@ -108,7 +121,12 @@ DWORD WINAPI Startup(LPVOID) {
     }
     // The message overlay goes in first: its hooks must be in before the game
     // creates its swapchain.
-    const bool messages = settings::GetBool("Notifications", true) && overlay::Install();
+    bool messages = settings::GetBool("Notifications", true);
+    if (const char* other = messages ? OtherDx12Tool() : nullptr) {
+        logx::Write("overlay: off because of %s (both drawing over the game crashed it); messages go to this log", other);
+        messages = false;
+    }
+    messages = messages && overlay::Install();
 
     const uint8_t* base = nullptr;
     size_t textEnd = 0, size = 0;
@@ -137,6 +155,15 @@ DWORD WINAPI Startup(LPVOID) {
         return 0;
     }
     ellie::Init(base, a);
+
+    // Extras > Skins: TLOU Outfit Changer (xinput1_4.dll) does the same patches;
+    // with it installed this part steps aside so they are not applied twice.
+    if (!settings::GetBool("UnlockSkins", true))
+        logx::Write("skins: UnlockSkins=0; the game's own skin locks");
+    else if (GameFolderModLoaded(L"xinput1_4.dll", "TLOUOutfitChanger") || Exists(L"TLOUOutfitChanger.ini"))
+        logx::Write("skins: TLOU Outfit Changer is installed and already unlocks every skin; left to it");
+    else
+        skins::Install();
     return 0;
 }
 

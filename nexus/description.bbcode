@@ -4,16 +4,31 @@
 
 Putting Ellie's model in Joel's chapters is the easy part. Without her animations she can barely move, can't aim properly, can't craft, and holds Joel's guns at odd angles. This mod loads everything she needs. She walks, runs, climbs, aims, shoots, reloads, interacts and crafts in every chapter, with her own animations.
 
+[size=4][b]New in 1.1[/b][/size]
+[list]
+[*][b]Works with ReShade and OptiScaler.[/b] The mod's on-screen messages turn themselves off when either is installed (that's what crashed the game before); with [i]Sounds=1[/i] you get beeps instead.
+[*][b]Fixed:[/b] Ellie's body or arms invisible on some PCs (only her head and backpack showed).
+[*][b]Fixed:[/b] invisible companion Joel ("a walking flashlight").
+[*][b]Fixed:[/b] crash in Extras > Skins, and Joel shown in the Ellie skin preview.
+[*][b]New:[/b] every Extras > Skins outfit and weapon skin unlocked and owned (on by default).
+[*][b]New:[/b] Joel's bow sits vertically on Ellie's back instead of across her backpack.
+[*]Ellie skins you pick in Extras > Skins show on her in game.
+[/list]
+Thanks to the players who reported bugs and tested the fixes!
+
 [size=4][b]Features[/b][/size]
 [list]
-[*][b]Ellie in Joel's chapters[/b], wearing the outfit that matches the chapter (or one you choose).
+[*][b]Ellie in Joel's chapters[/b], wearing the outfit Ellie wears in that chapter (or one you choose), and any Ellie skin from Extras > Skins.
 [*][b]She really moves[/b]: her own walking, aiming, cover, throwing, melee, ladders and more. The mod has the game stream her animation packages in, the same way it loads a chapter.
 [*][b]Crafting works in every chapter[/b], not just Winter, and she knows every recipe.
 [*][b]Joel's 9mm sits straight in her hands[/b], with proper recoil.
 [*][b]Joel follows her as the AI companion[/b] instead of a second Ellie (on by default): the same companion, with her AI and scripted moments, in Joel's body and the chapter's outfit.
+[*][b]Every Extras > Skins skin unlocked[/b]: all Ellie and Joel outfits, backpacks and weapon skins, no points spent (optional).
+[*][b]Joel's bow sits vertically on her back[/b], like her own bow (optional).
+[*][b]Works with ReShade and OptiScaler.[/b]
 [*][b]F10 switches[/b] between Ellie and the story character at any time, restarting from your last checkpoint.
-[*]Small [b]on-screen messages[/b] show what's happening: "Loading Ellie's animations..." with a progress bar, then "Swapped to Ellie".
-[*]Settings in [i]Documents\Playable Ellie (WORKING)\PlayableEllie.ini[/i], kept when you update.
+[*]Small [b]on-screen messages[/b] show what's happening: "Loading Ellie's animations..." with a progress bar, then "Swapped to Ellie" (off by themselves with ReShade or OptiScaler).
+[*]Settings in [i]Documents\Playable Ellie (WORKING)\PlayableEllie.ini[/i], kept when you update. Changes apply the next time the game starts.
 [/list]
 
 [size=4][b]How to use[/b][/size]
@@ -26,8 +41,8 @@ Putting Ellie's model in Joel's chapters is the easy part. Without her animation
 [size=4][b]Installation[/b][/size]
 [b]Fluffy Mod Manager (recommended)[/b]
 [list=1]
-[*]Put [i]PlayableEllieWorking-v1.0.0.zip[/i] in [i]Fluffy Mod Manager\Games\TLOU\Mods\[/i].
-[*]Open Fluffy and tick [b]Playable Ellie (WORKING)[/b]. Untick it to turn the mod off.
+[*]Put [i]PlayableEllieWorking-v1.1.0.zip[/i] in [i]Fluffy Mod Manager\Games\TLOU\Mods\[/i].
+[*]Open Fluffy and tick [b]Playable Ellie (WORKING)[/b] (untick the old version first). Untick it to turn the mod off.
 [/list]
 
 [b]Manual[/b]
@@ -43,28 +58,46 @@ Install while the game is closed, and use one method only. No other loader is ne
 [*][b]PlayAsEllie[/b] (1) — play as Ellie; F10 changes it
 [*][b]ToggleKey[/b] (121 = F10) — any Windows key code, 0 = no key
 [*][b]JoelCompanion[/b] (1) — the companion Ellie becomes Joel
-[*][b]Outfit[/b] (0) — 0 = match the chapter, 1-11 = a fixed outfit
+[*][b]Outfit[/b] (0) — 0 = the outfit Ellie wears in the chapter, 1-11 = a fixed outfit. An Ellie skin from Extras > Skins is drawn over it; pick Default there to see this one
 [*][b]GiveRecipes[/b] (1) — teach Ellie every crafting recipe
 [*][b]Fix9mm[/b] (1) — Joel's 9mm sits straight (0 = the game's own, tilts up)
-[*][b]Notifications[/b] (1) — on-screen messages; [b]Sounds[/b] (0) — beeps
+[*][b]Notifications[/b] (1) — on-screen messages (off by themselves with ReShade/OptiScaler); [b]Sounds[/b] (0) — beeps
 [*][b]Logging[/b] (1) — [i]PlayableEllie.log[/i] next to the game
+[*][b]UnlockSkins[/b] (1) — every Extras > Skins skin unlocked and owned
+[*][b]BowOnBack[/b] (1) — Joel's bow sits vertically on Ellie's back
 [/list]
 
 [size=4][b]Compatibility[/b][/size]
 [list]
 [*][b]Tested:[/b] Steam, game version 1.1.4.0 (build 18995818), [i]tlou-i.exe[/i]. [i]tlou-i-l.exe[/i] (low latency) is supported too.
 [*]Everything is found by signature in the game's code. If a game update changes something, that part switches itself off and the log says why — the game keeps running.
-[*]Loads as [i]hid.dll[/i], so it works next to my other mods: [url=https://www.nexusmods.com/thelastofuspart1/mods/254]The Last of Us Infinite Ammo[/url] and [url=https://www.nexusmods.com/thelastofuspart1/mods/255]TLOU Outfit Changer[/url].
+[*][b]ReShade and OptiScaler:[/b] supported (tested by a player with both on a laptop). The mod's on-screen messages turn off by themselves when they're installed.
+[*]Loads as [i]hid.dll[/i], so it works next to my other mods: [url=https://www.nexusmods.com/thelastofuspart1/mods/254]The Last of Us Infinite Ammo[/url] and [url=https://www.nexusmods.com/thelastofuspart1/mods/255]TLOU Outfit Changer[/url] (if the Outfit Changer is installed, this mod leaves the skin unlock to it).
 [*][b]w1z's menu[/b] ([url=https://www.nexusmods.com/thelastofuspart1/mods/256]mod 256[/url]) already includes this playable Ellie on its Character page. If the menu is installed, this mod steps aside and does nothing — use one or the other.
 [*]Single-player only. The mod never writes save or profile files itself; the recipes it teaches Ellie are saved by the game at its next checkpoint.
 [/list]
 
 [size=4][b]Known issues[/b][/size]
 [list]
-[*]When the 9mm runs dry and the game switches weapons by itself, Ellie's arms stay out with no animation until you aim. Aim once and she's back to normal. [i]Fix9mm=0[/i] in the ini avoids it, but then the 9mm tilts up in her hands.
-[*]Bow: Ellie's arm clips through it when it's put away.
+[*][b]Back to Joel after some cutscenes:[/b] when a scene changes Joel's outfit without a new spawn (for example when he puts his backpack on in Pittsburgh), you play as Joel again. Press [b]F10 twice[/b] to get Ellie back.
+[*]When the 9mm runs dry and the game switches weapons by itself, Ellie's arms stay out until you aim. Aim once and she's back to normal. [i]Fix9mm=0[/i] avoids it, but then the 9mm tilts up in her hands.
+[*]After a bow shot or a reload she can stand with her arms out for a moment; aiming or moving brings her back.
+[*]Close to cars and walls her gun or arm can twitch; step back a little.
 [*]Shotgun and hunting rifle twitch in from the right when aiming.
 [*]Companion Joel speaks Ellie's lines in her voice (voices belong to the companion).
+[*]With ReShade or OptiScaler there are no on-screen messages (on purpose).
+[/list]
+
+[size=4][b]Fixing a problem yourself[/b][/size]
+[list]
+[*][b]You're Joel again[/b] (after a cutscene): press F10 twice.
+[*][b]Ellie's body, arms or legs invisible:[/b] use [i]Outfit=0[/i] (the default); if you picked an outfit, try [i]Outfit=1[/i].
+[*][b]Companion Joel invisible or wrong:[/b] make sure you have 1.1; or set [i]JoelCompanion=0[/i] (Ellie keeps her companion).
+[*][b]Crash on spawn or F10 with an overlay tool:[/b] ReShade and OptiScaler are handled automatically; for other overlays set [i]Notifications=0[/i].
+[*][b]Outfit= does nothing:[/b] restart the game after editing the ini, and set Ellie's skin to Default in Extras > Skins.
+[*][b]Bow looks wrong:[/b] [i]BowOnBack=0[/i]. [b]Skins menu looks wrong:[/b] [i]UnlockSkins=0[/i].
+[*][b]Arms out after the 9mm runs dry:[/b] aim once; or [i]Fix9mm=0[/i].
+[*][b]Anything else:[/b] Pause > Restart Checkpoint, or F10 twice. Then post your [i]PlayableEllie.log[/i] (next to [i]tlou-i.exe[/i]) as a file in the Posts or Bugs tab.
 [/list]
 
 [size=4][b]Source code[/b][/size]

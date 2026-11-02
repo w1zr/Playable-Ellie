@@ -1,4 +1,4 @@
-Playable Ellie (WORKING) v1.0 - The Last of Us Part I (PC)
+Playable Ellie (WORKING) v1.1 - The Last of Us Part I (PC)
 =============================================================
 
 Play Joel's chapters as Ellie, done properly:
@@ -7,53 +7,82 @@ Play Joel's chapters as Ellie, done properly:
   - crafting works in every chapter, with all recipes,
   - Joel's 9mm sits straight in her hands, with recoil,
   - Joel follows her as the AI companion (optional, on by default),
-  - she wears the outfit that matches the chapter (or one you choose).
+  - she wears the outfit Ellie wears in that chapter (or one you choose),
+    and the Ellie skins you pick in Extras > Skins,
+  - every Extras > Skins outfit and weapon skin is unlocked and owned
+    (optional, on by default),
+  - Joel's bow sits vertically on her back,
+  - works with ReShade and OptiScaler.
+
+New in 1.1
+  - Works with ReShade and OptiScaler: the mod's on-screen messages turn
+    themselves off when either is installed (both drawing crashed the game).
+  - Fixed: Ellie's body or arms invisible on some PCs.
+  - Fixed: invisible companion Joel ("walking flashlight").
+  - Fixed: crash in Extras > Skins, and Joel shown in the Ellie preview.
+  - New: every Extras > Skins skin unlocked (UnlockSkins=1).
+  - New: the bow sits vertically on her back (BowOnBack=1).
 
 Install
   Fluffy Mod Manager: put the zip in Fluffy's Games\TLOU\Mods folder and
-  tick it.
+  tick it (untick any older version).
   By hand: copy hid.dll next to tlou-i.exe
   (Steam > right-click the game > Manage > Browse local files).
   Uninstall: deactivate in Fluffy, or delete hid.dll.
 
 Use
   Ellie is on by default. Load a save of one of Joel's chapters and you
-  play as Ellie. Her animations usually load with the chapter; if they are
-  not in yet, the mod loads them and restarts from your last checkpoint once
-  (progress since that checkpoint is lost, as with Pause > Restart
-  Checkpoint). A small message at the bottom left shows what
-  is happening.
-
-  F10 (in game) switches between Ellie and the story character and restarts
-  from your last checkpoint as that character. The message shows "Loading
-  Ellie's animations..." with a progress bar, "Restarting checkpoint...",
-  then "Swapped to Ellie" or "Swapped to Joel". F10 waits until it's done.
+  play as Ellie. If her animations are not loaded yet, the mod loads them
+  and restarts from your last checkpoint once (progress since that
+  checkpoint is lost, as with Pause > Restart Checkpoint).
+  F10 (in game) switches between Ellie and the story character and
+  restarts from your last checkpoint as that character.
 
 Settings
   Documents\Playable Ellie (WORKING)\PlayableEllie.ini (made on first launch,
-  kept when you update). PlayAsEllie, ToggleKey (121 = F10), JoelCompanion,
-  Outfit (0 = match the chapter, 1-11 = a fixed outfit), GiveRecipes, Fix9mm,
-  Notifications (on-screen messages), Sounds (beeps, off), Logging.
+  kept when you update; new keys are added). Changes apply the next time the
+  game starts. PlayAsEllie, ToggleKey (121 = F10), JoelCompanion, Outfit
+  (0 = the chapter's outfit, 1-11 = a fixed outfit; an Ellie skin from
+  Extras > Skins is drawn over it), GiveRecipes, Fix9mm, Notifications
+  (on-screen messages; off by itself with ReShade/OptiScaler), Sounds
+  (beeps), Logging, UnlockSkins (every Extras skin), BowOnBack (bow on her
+  back).
+
+Known issues
+  - After some cutscenes that change Joel's outfit (e.g. he puts his
+    backpack on in Pittsburgh) you play as Joel again. Press F10 twice.
+  - When the 9mm runs dry and the game switches weapons by itself, Ellie's
+    arms stay out until you aim. Aim once. Fix9mm=0 avoids it, but the 9mm
+    then tilts up in her hands.
+  - After a bow shot or a reload she can stand with her arms out for a
+    moment; aiming or moving brings her back.
+  - Close to cars and walls her gun or arm can twitch; step back a little.
+  - Shotgun and hunting rifle twitch in from the right when aiming.
+  - Companion Joel speaks Ellie's lines in her voice.
+  - With ReShade or OptiScaler there are no on-screen messages (Sounds=1
+    beeps instead).
+
+Fixing a problem yourself
+  You are Joel again ............ F10 twice
+  Ellie's body is invisible ..... Outfit=0 (default); or try Outfit=1
+  Companion Joel looks wrong .... JoelCompanion=0
+  Crash with an overlay tool .... Notifications=0
+  Outfit= does nothing .......... restart the game; Ellie skin = Default
+  Bow looks wrong ............... BowOnBack=0
+  Skins menu looks wrong ........ UnlockSkins=0
+  Arms out after the 9mm ........ aim once; or Fix9mm=0
+  Anything else ................. Pause > Restart Checkpoint or F10 twice,
+                                  then send PlayableEllie.log as a file.
 
 Log
   PlayableEllie.log next to tlou-i.exe says what was found and what the mod
-  did. Please include it with bug reports.
-
-Known issues
-  - When the 9mm runs dry and the game switches weapons by itself, Ellie's
-    arms stay out with no animation until you aim. Aim once to fix it.
-    Fix9mm=0 in the ini avoids it, but then the 9mm tilts up in her hands.
-  - Bow: Ellie's arm clips through it when it is put away.
-  - Shotgun and hunting rifle twitch in from the right when aiming.
-  - Companion Joel speaks Ellie's lines in her voice.
-  - Not tested yet: cutscenes, chapter transitions, Ellie's own chapters
-    (Winter) with the mod on, playing a whole chapter through.
+  did. Please send it (the file, not copied text) with bug reports.
 
 Other mods
-  w1z's menu already has all of this (Character page). If it is installed
-  (winmm.dll), this mod steps aside and changes nothing.
-  Works next to the TLOU Infinite Ammo mod and the TLOU Outfit Changer
-  (different DLL names); not tested together yet.
+  w1z's menu already has the playable Ellie (Character page). If it is
+  installed (winmm.dll), this mod steps aside and changes nothing.
+  TLOU Outfit Changer: this mod leaves the skin unlock to it when it is
+  installed. Works next to TLOU Infinite Ammo.
 
 Notes
   Single-player only. The mod never writes save or profile files itself;

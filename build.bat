@@ -23,7 +23,7 @@ set CFLAGS=%COMMON% /std:c++17 /W4 /WX /EHa /DIMGUI_DISABLE_OBSOLETE_FUNCTIONS /
 set TPFLAGS=%COMMON% /W3 /EHa /DIMGUI_DISABLE_OBSOLETE_FUNCTIONS /Ithird_party\imgui
 
 set SRC=src\dllmain.cpp src\proxy_hid.cpp src\log.cpp src\settings.cpp src\scan.cpp src\dscan.cpp src\resolve.cpp ^
- src\gameloop.cpp src\ellie.cpp src\overlay.cpp
+ src\gameloop.cpp src\ellie.cpp src\overlay.cpp src\skinscan.cpp src\skins.cpp
 set IMGUI=third_party\imgui\imgui.cpp third_party\imgui\imgui_draw.cpp third_party\imgui\imgui_tables.cpp ^
  third_party\imgui\imgui_widgets.cpp third_party\imgui\backends\imgui_impl_dx12.cpp
 set MINHOOK=third_party\minhook\src\buffer.c third_party\minhook\src\hook.c third_party\minhook\src\trampoline.c ^
@@ -35,7 +35,7 @@ cl %CFLAGS% /c %SRC% /Fo"build\obj\\" || exit /b 1
 ml64 /nologo /c /Fo"build\obj\hid_stubs.obj" src\hid_stubs.asm || exit /b 1
 link /nologo /DLL /DEF:src\hid.def /GUARD:CF /OUT:build\hid.dll build\obj\*.obj build\obj3\*.obj ^
  user32.lib kernel32.lib shell32.lib d3d12.lib dxgi.lib || exit /b 1
-cl %CFLAGS% tests\scan_test.cpp src\scan.cpp src\dscan.cpp src\resolve.cpp /Fo"build\test\\" /Fe"build\scan_test.exe" || exit /b 1
+cl %CFLAGS% tests\scan_test.cpp src\scan.cpp src\dscan.cpp src\resolve.cpp src\skinscan.cpp /Fo"build\test\\" /Fe"build\scan_test.exe" || exit /b 1
 cl %CFLAGS% tests\proxy_test.cpp /Fo"build\test\\" /Fe"build\proxy_test.exe" || exit /b 1
 
 echo.

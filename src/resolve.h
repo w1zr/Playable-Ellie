@@ -24,6 +24,8 @@ struct Addresses {
     size_t packageLoaded = 0;
     // Optional: each one only switches its own feature off.
     size_t lookResolve = 0;    // look resolver (hooked: the companion Ellie becomes Joel)
+    size_t skinLookReturn = 0; // return address of the Skins menu's look call (left alone by that hook)
+    size_t levelLookReturn = 0; // return address of the level-load look registration (left alone too)
     size_t ellieCraftFlag = 0; // lets an Ellie player craft outside Winter
     size_t allRecipes = 0;     // developer menu's All Recipes callback
 };

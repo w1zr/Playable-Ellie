@@ -125,6 +125,20 @@ Result Find(const uint8_t* b, size_t textEnd, size_t imageSize) {
     const auto look = scan::FindAll(b, textEnd, scan::Parse(engine::kLookResolve));
     if (look.size() == 1) a.lookResolve = look[0];
     else r.errors.push_back("look resolver: " + std::to_string(look.size()) + " matches (expected 1)");
+    if (a.lookResolve) {
+        const auto skin = scan::FindAll(b, textEnd, scan::Parse(engine::kSkinLookCall));
+        const size_t call = skin.size() == 1 ? skin[0] + engine::kSkinLookCallAt : 0;
+        int32_t rel = 0;
+        if (call) std::memcpy(&rel, b + call + 1, 4);
+        if (call && call + 5 + rel == a.lookResolve) a.skinLookReturn = skin[0] + engine::kSkinLookReturn;
+        else r.errors.push_back("Skins menu look call: " + std::to_string(skin.size()) + " matches (expected 1 calling the look resolver)");
+        const auto level = scan::FindAll(b, textEnd, scan::Parse(engine::kLevelLookCall));
+        const size_t lcall = level.size() == 1 ? level[0] + engine::kLevelLookCallAt : 0;
+        rel = 0;
+        if (lcall) std::memcpy(&rel, b + lcall + 1, 4);
+        if (lcall && lcall + 5 + rel == a.lookResolve) a.levelLookReturn = level[0] + engine::kLevelLookReturn;
+        else r.errors.push_back("level-load look call: " + std::to_string(level.size()) + " matches (expected 1 calling the look resolver)");
+    }
     a.ellieCraftFlag = dscan::FindEllieCraftFlag(b, textEnd, imageSize, err);
     if (!a.ellieCraftFlag) fail("Ellie crafting flag");
     return r;

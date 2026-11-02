@@ -1,5 +1,29 @@
 # Changelog
 
+## 1.1 (2026-11-01)
+
+Built from player reports on Nexus, tested in game by the owner and by a player with ReShade and OptiScaler on a laptop (test builds 1.0.3 to 1.0.22, see TEST_REPORT.md).
+
+**New**
+- **ReShade and OptiScaler support.** The mod's on-screen messages are drawn over the game the same way these tools draw, and together they crashed the game on spawn or F10. The mod now notices ReShade, OptiScaler or another `dxgi.dll` / `d3d12.dll` in the game folder and turns its messages off by itself (they still go to the log; `Sounds=1` beeps instead).
+- **Every Extras > Skins skin unlocked** (`UnlockSkins=1`, on by default): Skins menus open on any save, every Ellie and Joel outfit, backpack and weapon skin owned, no points spent, saves untouched. Same patches as TLOU Outfit Changer; steps aside if that mod is installed.
+- **The bow sits vertically on Ellie's back** (`BowOnBack=1`, on by default): Joel's bow uses Ellie's bow settings while you play as Ellie.
+- Ellie skins picked in Extras > Skins show on player Ellie.
+- The ini explains more (Outfit vs skins, messages with ReShade, changes apply at the next start); older files get the new keys, values kept.
+
+**Fixed**
+- **Ellie's body or arms invisible** (only her head and backpack) on some PCs. With `Outfit=0` she now wears the outfit the chapter's own Ellie wears, which the level always loads (her old outfit was picked by Joel's outfit number and only streamed in on fast PCs). With `Outfit=N` that outfit's body parts are loaded too. Her outfit also stays hers when the game asks for it again from worker threads.
+- **Invisible companion Joel** ("a walking flashlight"): the companion now becomes Joel in the outfit Joel wears in that chapter.
+- Companion Joel stays Joel when he and Ellie would wear the same outfit.
+- **Crash in Extras > Skins** while playing as Ellie, and Joel shown in the Ellie skin preview.
+- Joel's no-backpack outfit after a cutscene now gives Ellie her matching no-backpack outfit.
+
+**Known issues**
+- After some cutscenes that change Joel's outfit without a new spawn (e.g. his backpack in Pittsburgh) you play as Joel again: press F10 twice.
+- 9mm runs dry: arms out until you aim (`Fix9mm=0` avoids it, the 9mm then tilts).
+- Short arms-out moments after a bow shot or a reload; gun/arm twitch close to walls and cars.
+- Shotgun and hunting rifle twitch in from the right when aiming; companion Joel speaks Ellie's lines.
+
 ## 1.0 (2026-10-30, first release)
 
 The 0.2.0 build released as 1.0, with its own logo and a `Fix9mm` setting.

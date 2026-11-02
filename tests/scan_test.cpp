@@ -10,6 +10,7 @@
 #include "../src/engine_defs.h"
 #include "../src/resolve.h"
 #include "../src/scan.h"
+#include "../src/skinscan.h"
 
 #include <windows.h>
 #include <cstdio>
@@ -101,6 +102,36 @@ static void TestImage(const char* path) {
     CHECK(data(a.packageMgr) && code(a.packageLoaded), "package manager 0x%zX, IsLoaded 0x%zX", a.packageMgr, a.packageLoaded);
     CHECK(code(a.lookResolve), "look resolver 0x%zX", a.lookResolve);
     CHECK(data(a.ellieCraftFlag), "Ellie crafting flag 0x%zX", a.ellieCraftFlag);
+    CHECK(code(a.skinLookReturn) && a.skinLookReturn > 5 && b[a.skinLookReturn - 5] == 0xE8,
+          "Skins menu look call returns at 0x%zX (calls the look resolver)", a.skinLookReturn);
+    CHECK(code(a.levelLookReturn) && a.levelLookReturn > 5 && b[a.levelLookReturn - 5] == 0xE8,
+          "level-load look call returns at 0x%zX (calls the look resolver)", a.levelLookReturn);
+
+    // Extras > Skins (UnlockSkins): the same sites TLOU Outfit Changer patches.
+    {
+        auto* nt = reinterpret_cast<const IMAGE_NT_HEADERS64*>(b + reinterpret_cast<const IMAGE_DOS_HEADER*>(b)->e_lfanew);
+        skinscan::Range codeRange;
+        std::vector<skinscan::Range> dataRanges;
+        const auto* sec = IMAGE_FIRST_SECTION(nt);
+        for (WORD i = 0; i < nt->FileHeader.NumberOfSections; ++i) {
+            const skinscan::Range rg{sec[i].VirtualAddress, sec[i].VirtualAddress + sec[i].Misc.VirtualSize};
+            const DWORD ch = sec[i].Characteristics;
+            if (ch & IMAGE_SCN_MEM_EXECUTE) {
+                if (!codeRange.end) codeRange = rg;
+            } else if ((ch & IMAGE_SCN_MEM_READ) && !(ch & IMAGE_SCN_MEM_DISCARDABLE)) {
+                dataRanges.push_back(rg);
+            }
+        }
+        const auto s = skinscan::LocateSkinSites(b, codeRange, dataRanges);
+        CHECK(s.ok, "Extras > Skins sites found (%s)", s.ok ? "unlock flag, 2 menu checks, 2 owned + 1 equip" : s.error.c_str());
+        bool stubsOk = s.ok;
+        for (const auto& o : s.owned) {
+            const uint64_t at = 0x140000000ull + o.offset, stub = at - 0x10000000ull;
+            stubsOk = stubsOk && !skinscan::BuildOwnedStub(stub, at, 0x140000000ull + o.owned, stub + 0x800, o).empty() &&
+                      skinscan::BuildSiteJump(at, stub).size() == 8;
+        }
+        CHECK(stubsOk, "Extras > Skins stubs and jumps build");
+    }
     CHECK(code(a.allRecipes), "All Recipes callback 0x%zX", a.allRecipes);
     for (const auto& k : kKnown)
         if (k.stamp == stamp)

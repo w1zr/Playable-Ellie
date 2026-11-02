@@ -8,7 +8,7 @@ rem   package.bat test     release\test\PlayableEllieWorking-v<version>-test.zip
 rem
 rem Run build.bat first. Never overwrites a zip that already exists.
 setlocal
-set VERSION=1.0.0
+set VERSION=1.1.0
 cd /d "%~dp0"
 if not exist build\hid.dll (
   echo build\hid.dll not found. Run build.bat first.
